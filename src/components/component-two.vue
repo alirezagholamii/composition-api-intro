@@ -3,8 +3,7 @@
     <h2>ComponentTwo</h2>
     <div>
       <input type="text" v-model="searchedWord" placeholder="search" />
-      <button @click.prevent="search" class="btn">search</button>
-      <button @click.prevent="sort" class="btn">sort</button>
+      <button @click.prevent="sortList" class="btn">sort</button>
     </div>
     <ul>
       <li v-for="item of list" :key="item.id">
@@ -16,56 +15,28 @@
 </template>
 
 <script>
-import { ref, onMounted, computed, watch } from "vue";
+import useFetchUsers from "@/composables/useFetchUsers";
+import useSortList from "@/composables/useSortList";
+import useSearch from "@/composables/useSearch";
 export default {
   name: "ComponentTwo",
   props: {
     title: String,
   },
   setup() {
-    const list = ref([]);
-    const originalList = [];
-    function getUsers() {
-      fetch("https://part-quiz-app.herokuapp.com/users")
-        .then((res) => res.json())
-        .then((res) => {
-          list.value = res;
-          originalList.push(...res);
-          console.log(originalList);
-        })
-        .catch((e) => console.log(e));
-    }
-    getUsers();
+    const { originalList } = useFetchUsers();
 
-    function sort() {
-      list.value.sort((a, b) => a.name.localeCompare(b.name));
-    }
+    const { matchingSearchQuery, searchedWord, searchedWordUppercase } =
+      useSearch(originalList);
 
-    const searchedWord = ref("");
-    function search() {
-      console.log(originalList);
-      list.value = originalList.filter((item) =>
-        item.name.includes(searchedWord.value)
-      );
-    }
-
-    onMounted(() => {
-      console.log("ComponentTwo Mounted");
-    });
-
-    const searchedWordUppercase = computed(() =>
-      searchedWord.value.toUpperCase()
-    );
-
-    watch(searchedWord, (value, oldValue) => {
-      console.log(value, oldValue);
-      search();
-    });
+    const { sort } = useSortList();
+    const sortList = () => {
+      sort(originalList);
+    };
 
     return {
-      list,
-      sort,
-      search,
+      list: matchingSearchQuery,
+      sortList,
       searchedWord,
       searchedWordUppercase,
     };
