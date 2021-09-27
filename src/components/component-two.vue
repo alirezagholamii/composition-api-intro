@@ -11,43 +11,64 @@
         {{ item.name }}
       </li>
     </ul>
+    <p>{{ searchedWordUppercase }}</p>
   </div>
 </template>
 
 <script>
+import { ref, onMounted, computed, watch } from "vue";
 export default {
   name: "ComponentTwo",
   props: {
-    msg: String,
+    title: String,
   },
-  data() {
-    return {
-      list: [],
-      originalList: [],
-      searchedWord: "",
-    };
-  },
-  created() {
-    this.getUsers();
-  },
-  methods: {
-    getUsers() {
+  setup() {
+    const list = ref([]);
+    const originalList = [];
+    function getUsers() {
       fetch("https://part-quiz-app.herokuapp.com/users")
         .then((res) => res.json())
         .then((res) => {
-          this.list = res;
-          this.originalList = [...res];
+          list.value = res;
+          originalList.push(...res);
+          console.log(originalList);
         })
         .catch((e) => console.log(e));
-    },
-    sort() {
-      this.list.sort((a, b) => a.name.localeCompare(b.name));
-    },
-    search() {
-      this.list = this.originalList.filter((item) =>
-        item.name.includes(this.searchedWord)
+    }
+    getUsers();
+
+    function sort() {
+      list.value.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    const searchedWord = ref("");
+    function search() {
+      console.log(originalList);
+      list.value = originalList.filter((item) =>
+        item.name.includes(searchedWord.value)
       );
-    },
+    }
+
+    onMounted(() => {
+      console.log("ComponentTwo Mounted");
+    });
+
+    const searchedWordUppercase = computed(() =>
+      searchedWord.value.toUpperCase()
+    );
+
+    watch(searchedWord, (value, oldValue) => {
+      console.log(value, oldValue);
+      search();
+    });
+
+    return {
+      list,
+      sort,
+      search,
+      searchedWord,
+      searchedWordUppercase,
+    };
   },
 };
 </script>
