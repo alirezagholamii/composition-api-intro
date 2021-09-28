@@ -1,16 +1,19 @@
 <template>
   <div class="container">
     <h2>ComponentOne</h2>
+    <h4>{{cmpTitle}}</h4>
     <div>
       <input type="text" v-model="searchedWord" placeholder="search" />
       <button @click.prevent="search" class="btn">search</button>
-      <button @click.prevent="sort" class="btn">sort</button>
     </div>
     <ul>
       <li v-for="item of list" :key="item.id">
         {{ item.name }}
       </li>
     </ul>
+    <p>
+      {{ upperCaseSearchedWord }}
+    </p>
   </div>
 </template>
 
@@ -30,6 +33,19 @@ export default {
   created() {
     this.getUsers();
   },
+  computed: {
+    upperCaseSearchedWord() {
+      return this.searchedWord.toUpperCase();
+    },
+    cmpTitle(){
+      return this.title
+    }
+  },
+  watch:{
+    searchedWord(){
+      this.search()
+    }
+  },
   methods: {
     getUsers() {
       fetch("https://part-quiz-app.herokuapp.com/users")
@@ -39,9 +55,6 @@ export default {
           this.originalList = [...res];
         })
         .catch((e) => console.log(e));
-    },
-    sort() {
-      this.list.sort((a, b) => a.name.localeCompare(b.name));
     },
     search() {
       this.list = this.originalList.filter((item) =>

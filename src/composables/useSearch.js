@@ -7,12 +7,12 @@ export default function useSearch(originalList) {
         return originalList.value.filter(item => item.name.includes(searchedWord.value))
     })
 
-    const searchedWordUppercase = computed(() =>
+    const upperCaseSearchedWord = computed(() =>
         searchedWord.value.toUpperCase()
     );
 
     return {
-        searchedWordUppercase,
+        upperCaseSearchedWord,
         searchedWord,
         matchingSearchQuery
     }

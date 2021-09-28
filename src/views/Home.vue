@@ -1,7 +1,7 @@
 <template>
   <div class="home">
-    <component-one :msg="msg" @deleteText="messageChanged" />
-    <component-two :msg="msg" @deleteText="messageChanged" />
+    <component-one :title="optionApi" />
+    <component-two :title="compositionApi" />
   </div>
 </template>
 
@@ -17,8 +17,15 @@ export default {
   },
   data() {
     return {
-      msg: `Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature`,
+      optionApi: "option api",
+      compositionApi: "composition api",
     };
+  },
+  created() {
+    setTimeout(() => {
+      this.optionApi = this.optionApi.toUpperCase();
+      this.compositionApi = this.compositionApi.toUpperCase();
+    }, 10_000);
   },
   methods: {
     messageChanged(value) {

@@ -1,44 +1,42 @@
 <template>
   <div class="container">
     <h2>ComponentTwo</h2>
+    <h4>{{ cmpTitle }}</h4>
+
     <div>
       <input type="text" v-model="searchedWord" placeholder="search" />
-      <button @click.prevent="sortList" class="btn">sort</button>
     </div>
     <ul>
       <li v-for="item of list" :key="item.id">
         {{ item.name }}
       </li>
     </ul>
-    <p>{{ searchedWordUppercase }}</p>
+    <p>{{ upperCaseSearchedWord }}</p>
   </div>
 </template>
 
 <script>
 import useFetchUsers from "@/composables/useFetchUsers";
-import useSortList from "@/composables/useSortList";
 import useSearch from "@/composables/useSearch";
+import { toRefs } from "vue";
 export default {
   name: "ComponentTwo",
   props: {
     title: String,
   },
-  setup() {
+  setup(props) {
     const { originalList } = useFetchUsers();
 
-    const { matchingSearchQuery, searchedWord, searchedWordUppercase } =
+    const { matchingSearchQuery, searchedWord, upperCaseSearchedWord } =
       useSearch(originalList);
 
-    const { sort } = useSortList();
-    const sortList = () => {
-      sort(originalList);
-    };
-
+    const { title } = toRefs(props);
+    
     return {
       list: matchingSearchQuery,
-      sortList,
       searchedWord,
-      searchedWordUppercase,
+      upperCaseSearchedWord,
+      cmpTitle: title,
     };
   },
 };
